@@ -5,11 +5,12 @@
 #include <chrono>
 #include <omp.h>
 #include <stack>
+#include <fstream>
 
-class ImprovedParallelQuickSort {
+class ParallelQuickSort {
 private:
-    static const int INSERTION_THRESHOLD = 50;
-    static const int PARALLEL_THRESHOLD = 1000;
+    static const int INSERTION_THRESHOLD = 50; // 插入排序阈值
+    static const int PARALLEL_THRESHOLD = 1000; // 并行阈值
 
     template <typename T>
     int partition(std::vector<T>& arr, int left, int right)
@@ -70,7 +71,6 @@ private:
     }
 
 public:
-    // 改进的并行快速排序
     template <typename T>
     void parallel_sort(std::vector<T>& arr, int left, int right, int depth = 0)
     {
@@ -131,9 +131,11 @@ public:
     }
 };
 
-// 优化的性能测试类
-class BetterPerformanceTester {
+// 性能测试类
+class PerformanceTester {
 private:
+    std::ofstream result_file;
+
     std::vector<int> generate_random_data(int size)
     {
         std::vector<int> data(size);
@@ -163,7 +165,7 @@ private:
 
         auto start = std::chrono::high_resolution_clock::now();
 
-        ImprovedParallelQuickSort sorter;
+        ParallelQuickSort sorter;
         if (parallel) {
             sorter.parallel_sort(data_copy);
         } else {
@@ -180,12 +182,26 @@ private:
     }
 
 public:
+    PerformanceTester()
+    {
+        // 打开结果文件
+        result_file.open("result.csv");
+        result_file << "数据量,线程数,顺序时间(ms),并行时间(ms),加速比,效率(%)\n";
+    }
+
+    ~PerformanceTester()
+    {
+        if (result_file.is_open()) {
+            result_file.close();
+        }
+    }
+
     void run_tests()
     {
-        std::vector<int> test_sizes = { 5000, 10000, 100000, 500000, 1000000, 5000000 };
-        std::vector<int> thread_counts = { 1, 2, 4, 8, 12 };
+        std::vector<int> test_sizes = { 10000, 50000, 100000, 500000, 1000000, 5000000 };
+        std::vector<int> thread_counts = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 
-        std::cout << "改进的并行快速排序性能测试\n";
+        std::cout << "并行快速排序性能测试\n";
         std::cout << "=========================================\n";
 
         for (int size : test_sizes) {
@@ -218,17 +234,24 @@ public:
 
                     printf(
                         "%6d | %11.3f | %11.3f | %6.2f | %5.1f%%\n", threads, seq_time, par_time, speedup, efficiency);
+
+                    // 保存结果到文件
+                    result_file << size << "," << threads << "," << seq_time << "," << par_time << "," << speedup << ","
+                                << efficiency << "\n";
+                    result_file.flush(); // 立即写入，避免数据丢失
                 }
             } catch (const std::exception& e) {
                 std::cout << "错误: " << e.what() << std::endl;
             }
         }
+
+        std::cout << "\n测试结果已保存到: result.csv" << std::endl;
     }
 };
 
 int main()
 {
-    BetterPerformanceTester tester;
+    PerformanceTester tester;
     tester.run_tests();
     return 0;
 }
