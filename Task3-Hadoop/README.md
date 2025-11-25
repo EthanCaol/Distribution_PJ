@@ -1,4 +1,5 @@
 
+# Hadoop单机伪分布式计环境搭建
 
 https://dblab.xmu.edu.cn/blog/4193
 https://hadoop.apache.org/releases.html
@@ -11,7 +12,7 @@ sudo passwd hadoop
 su hadoop
 
 # 安装Java8和Hadoop3.3.6
-sudo apt install -y openjdk-8-jdk
+sudo apt install -y openjdk-8-jdk openssh-server
 wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
 tar -xzvf hadoop-3.3.6.tar.gz
 sudo mv hadoop-3.3.6 /usr/local/hadoop
@@ -25,16 +26,13 @@ export HADOOP_HOME=/usr/local/hadoop
 export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 bash
 
+# 修改配置文件 /etc/hadoop/
 hdfs namenode -format # 格式化HDFS文件系统
 start-dfs.sh # 启动HDFS守护进程
 jps # 查看Hadoop进程
-
-hdfs 
-
-
 ```
 
-/usr/local/hadoop/etc/hadoop/hadoop-env.sh
+etc/hadoop/hadoop-env.sh
 ```sh
 # The java implementation to use. By default, this environment
 # variable is REQUIRED on ALL platforms except OS X!
@@ -42,7 +40,7 @@ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ```
 
 
-/usr/local/hadoop/etc/hadoop/core-site.xml
+etc/hadoop/core-site.xml
 ```xml
 <configuration>
     <property>
@@ -57,7 +55,7 @@ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 </configuration>
 ```
 
-/usr/local/hadoop/etc/hadoop/hdfs-site.xml
+etc/hadoop/hdfs-site.xml
 ```xml
 <configuration>
     <property>

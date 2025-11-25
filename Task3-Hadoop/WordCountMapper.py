@@ -1,25 +1,21 @@
-#!/usr/bin/env python3
-
+#!/home/hadoop/miniconda3/bin/python3
 import sys
 import re
 
-def read_input(file):
-    for line in file:
-        # 分割每行成单词
-        yield line.split()
 
 def main():
-    # 从标准输入读取数据
-    data = read_input(sys.stdin)
-    
-    for words in data:
-        # 处理每个单词
+    # 读取标准输入
+    for line in sys.stdin:
+        # 移除首尾空白字符
+        line = line.strip()
+        # 使用正则表达式分割单词（处理标点符号）
+        words = re.findall(r"\b\w+\b", line.lower())
+
+        # 输出每个单词和计数1
         for word in words:
-            # 清洗单词：转小写，去除标点
-            clean_word = re.sub(r'[^a-zA-Z0-9]', '', word.lower())
-            if clean_word:  # 只处理非空单词
-                # 输出: 单词\t1
-                print(f"{clean_word}\t1")
+            if word:  # 确保不是空字符串
+                print(f"{word}\t1")
+
 
 if __name__ == "__main__":
     main()
